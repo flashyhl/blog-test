@@ -5,14 +5,15 @@ permalink: /ansible-install-nginx/
 ---
  
 -------
-创建Ansible的安装目录  
+1、创建Ansible的安装目录  
 
 \# mkdir /ansible-test/nginx  
 
 \# cd /ansible-test/nginx  
 
 
-创建配置目录
+2、创建配置目录  
+
 \# mkdir -p roles/{common,install}/{handlers,files,meta,tasks,templates,vars}  
   
 ```
@@ -44,7 +45,7 @@ permalink: /ansible-install-nginx/
 * templates :通常存一些配置文件，启动脚本等模板文件
 * vars : 定义的变量
 
-6、文件处理
+3、文件处理
 common目录下操作：
 \# cd /ansible-test/nginx/roles/common/tasks  
 
@@ -60,7 +61,8 @@ common目录下操作：
     - pcre-devel
     - openssl-devel
 ```
-install目录下操作:
+install目录下操作:  
+
 \# cd /ansible-test/nginx/roles/install  
 
 \# cp /usr/local/src/nginx-1.8.1.tar.gz ./files/  
@@ -106,7 +108,7 @@ nginx_basedir: /etc/nginx
 - name: Copy Nginx Start Script
   template: src=nginx dest=/etc/init.d/nginx owner=root group=root mode=0755
 - name: Copy Nginx Config
-  template: src=nginx.conf dest=\{\{ nginx_basedir \}\}/ owner=root group=root mode=0644
+  template: src=nginx.conf dest={\{ nginx_basedir \}}/ owner=root group=root mode=0644
 - name: Create Nginx config path
   file: 
     path: /\{\{ nginx_basedir \}\}/conf.d
@@ -115,6 +117,7 @@ nginx_basedir: /etc/nginx
 ```
 
 \# vim install.yml  
+ 
 ```
 - name: Create Nginx user
   user: name=\{\{ nginx_user \}\} state=present createhome=no shell=/sbin/nologin
@@ -130,14 +133,16 @@ nginx_basedir: /etc/nginx
     state: absent
 ```
 
-main.yml 配置包含 copy.yml 跟 install.yml
+main.yml 配置包含 copy.yml 跟 install.yml  
+
 \# vim main.yml  
 
 ```
 - import_tasks: copy.yml
 - import_tasks: install.yml
 ```
-7. 编辑总入口文件
+4、 编辑总入口文件  
+
 \# cd /ansible-test/nginx  
 
 \# vim install.yml  
@@ -151,6 +156,6 @@ main.yml 配置包含 copy.yml 跟 install.yml
     - common
     - install
 ```
-8.安装
+5、 安装
 ansible-playbook install.yml
 
