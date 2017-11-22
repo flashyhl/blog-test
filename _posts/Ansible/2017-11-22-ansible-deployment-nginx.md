@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Ansible Install Nginx
+title: Ansible安装Nginx 
 permalink: /ansible-install-nginx/
 ---
  
@@ -10,8 +10,7 @@ mkdir /ansible-test/nginx
 cd /ansible-test/nginx
 创建配置目录
 mkdir -p roles/{common,install}/{handlers,files,meta,tasks,templates,vars}
-###### 结构如下：
----
+结构如下：
     .
     └── roles
         ├── common
@@ -28,7 +27,7 @@ mkdir -p roles/{common,install}/{handlers,files,meta,tasks,templates,vars}
             ├── tasks
             ├── templates
             └── vars
-  ---      
+说明如下：                
 roles 目录下有两个角色，common为一些准备操作，install 为安装nginx 的操作。
 每个角色下有几个目录：
 handlers :当发生改变时要执行的操作，通常用在配置文件发生改变，重启服务
