@@ -208,16 +208,13 @@ esac
 ```
 #### 一、Nginx的安装
 1、创建Nginx的安装目录  
-
 \# mkdir -p /ansible-test/nginx  
-
 \# cd /ansible-test/nginx  
 
 
 2、创建配置目录  
 
 \# mkdir -p roles/{common,install}/{handlers,files,meta,tasks,templates,vars}  
-  
 ```
 结构如下：
     .
@@ -396,6 +393,7 @@ common目录下操作：
     - gcc-c++
     - openssl-devel
 ```
+
 install目录下操作:  
 \# cd /ansible-test/ruby/roles/install  
 \# vim vars/main.yml  
@@ -431,7 +429,7 @@ ruby_ver: ruby-2.3.0
   command: gem install \{\{ item.package \}\}
   with_items:
     - { package: "jekyll" }
-    - { package: "bundler" }```
+    - { package: "bundler" }
 ```
 \# vim remove.yml  
 ```
@@ -463,6 +461,7 @@ main.yml 配置包含 remove.yml 和 install.yml
     - common
     - install
 ```
+
 5、 安装  
 \# cd cd /ansible-test/ruby  
 \# ansible-playbook install.yml
