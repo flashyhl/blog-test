@@ -26,21 +26,22 @@ mkdir -p roles/{common,install}/{handlers,files,meta,tasks,templates,vars}
             ├── meta
             ├── tasks
             ├── templates
-            └── vars
+            └── vars           
 说明如下：                
-roles 目录下有两个角色，common为一些准备操作，install 为安装nginx 的操作。
-每个角色下有几个目录：
-handlers :当发生改变时要执行的操作，通常用在配置文件发生改变，重启服务
-files :为安装时用到的一些文件
-meta :为说明信息，说明角色依赖等信息
-tasks :核心的配置文件
-templates :通常存一些配置文件，启动脚本等模板文件
-vars : 定义的变量
+* roles 目录下有两个角色，common为一些准备操作，install 为安装nginx 的操作。
+* 每个角色下有几个目录：
+* handlers :当发生改变时要执行的操作，通常用在配置文件发生改变，重启服务
+* files :为安装时用到的一些文件
+* meta :为说明信息，说明角色依赖等信息
+* tasks :核心的配置文件
+* templates :通常存一些配置文件，启动脚本等模板文件
+* vars : 定义的变量
 
 6、文件处理
 common:
 cd common;mkdir tasks;cd tasks
 vim main.yml
+```js
 - name: Install initialization require software
   yum: name={{ item }} state=installed
   with_items:
@@ -49,6 +50,7 @@ vim main.yml
     - zlib-devel
     - pcre-devel
     - openssl-devel
+```
 install:
 cd ../../install; mkdir tasks vars files templates
 cp /usr/local/nginx.tar.gz files/
