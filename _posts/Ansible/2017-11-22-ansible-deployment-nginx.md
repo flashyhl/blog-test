@@ -13,7 +13,7 @@ cd /ansible-test/nginx
 创建配置目录
 mkdir -p roles/{common,install}/{handlers,files,meta,tasks,templates,vars}  
 
-```js
+```
 结构如下：
     .
     └── roles
@@ -46,7 +46,7 @@ mkdir -p roles/{common,install}/{handlers,files,meta,tasks,templates,vars}
 common目录下操作：
 cd /ansible-test/nginx/roles/common/tasks
 vim main.yml
-```js
+```
 - name: Install initialization require software
   yum: name=\{\{ item \}\} state=installed
   with_items:
@@ -72,7 +72,7 @@ nginx_basedir: /etc/nginx
 
 cd tasks
 vim copy.yml
-```js
+```
 - name: Copy Nginx Software
   copy: src=\{\{ nginx_ver \}\}.tar.gz dest=/tmp/\{\{ nginx_ver \}\}.tar.gz owner=root group=root
 - name: Uncompression Nginx Software
@@ -104,7 +104,7 @@ vim copy.yml
 ```
 
 vim install.yml
-```js
+```
 - name: Create Nginx user
   user: name=\{\{ nginx_user \}\} state=present createhome=no shell=/sbin/nologin
 - name: Add Boot Start Nginx Service
