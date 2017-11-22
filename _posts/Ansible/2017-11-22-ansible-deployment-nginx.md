@@ -10,6 +10,7 @@ mkdir /ansible-test/nginx
 cd /ansible-test/nginx
 创建配置目录
 mkdir -p roles/{common,install}/{handlers,files,meta,tasks,templates,vars}
+```js
 结构如下：
     .
     └── roles
@@ -26,7 +27,8 @@ mkdir -p roles/{common,install}/{handlers,files,meta,tasks,templates,vars}
             ├── meta
             ├── tasks
             ├── templates
-            └── vars           
+            └── vars   
+```                    
 说明如下：                
 * roles 目录下有两个角色，common为一些准备操作，install 为安装nginx 的操作。
 * 每个角色下有几个目录：
@@ -38,8 +40,8 @@ mkdir -p roles/{common,install}/{handlers,files,meta,tasks,templates,vars}
 * vars : 定义的变量
 
 6、文件处理
-common:
-cd common;mkdir tasks;cd tasks
+common目录下操作：
+cd /ansible-test/nginx/roles/common/tasks
 vim main.yml
 ```js
 - name: Install initialization require software
@@ -51,53 +53,87 @@ vim main.yml
     - pcre-devel
     - openssl-devel
 ```
-install:
-cd ../../install; mkdir tasks vars files templates
-cp /usr/local/nginx.tar.gz files/
-cp /usr/local/nginx/conf/nginx.conf templates/
-cp /etc/init.d/nginx templates/
-vi vars/main.yml
+install目录下操作:
+cd /ansible-test/nginx/roles/install
+cp /usr/local/src/nginx-1.8.1.tar.gz ./files/
+cp /usr/local/src/nginx.conf ./templates/
+cp /usr/local/src/nginx templates/
+vim vars/main.yml
+```js
 nginx_user: www
-nginx_port: 80
-nginx_basedir: /usr/local/nginx
+nginx_group: www
+nginx_bin: /usr/sbin
+nginx_ver: nginx-1.8.1
+nginx_basedir: /etc/nginx
+```
 
 cd tasks
 vim copy.yml
+```js
 - name: Copy Nginx Software
-  copy: src=nginx.tar.gz dest=/tmp/nginx.tar.gz owner=root group=root
+  copy: src={{ nginx_ver }}.tar.gz dest=/tmp/{{ nginx_ver }}.tar.gz owner=root group=root
 - name: Uncompression Nginx Software
-  shell: tar zxf /tmp/nginx.tar.gz -C /usr/local/
+  unarchive: 
+    src: /tmp/{{ nginx_ver }}.tar.gz
+    dest: /tmp/
+    remote_src: yes
+- name: Setting Nginx Configure
+  shell: ./configure --prefix={{ nginx_basedir }} --sbin-path=/usr/sbin/nginx --conf-path={{ nginx_basedir }}/nginx.conf --without-http_memcached_module --with-mail_ssl_module --with-http_flv_module --with-http_dav_module --with-http_realip_module --with-http_addition_module --with-http_sub_module --with-http_gunzip_module --user={{ nginx_user }} --group={{ nginx_group }} --with-http_stub_status_module --with-http_ssl_module --with-http_gzip_static_module --with-pcre --error-log-path={{ nginx_basedir }}/logs/error.log --http-log-path={{ nginx_basedir }}/logs/access.log
+  args:
+    chdir: /tmp/{{ nginx_ver }}
+- name: Compile Nginx
+  shell: make
+  args:
+    chdir: /tmp/{{ nginx_ver }}
+- name: Install Nginx
+  shell: make install
+  args:
+    chdir: /tmp/{{ nginx_ver }}
 - name: Copy Nginx Start Script
   template: src=nginx dest=/etc/init.d/nginx owner=root group=root mode=0755
 - name: Copy Nginx Config
-  template: src=nginx.conf dest={{ nginx_basedir }}/conf/ owner=root group=root mode=0644
+  template: src=nginx.conf dest={{ nginx_basedir }}/ owner=root group=root mode=0644
+- name: Create Nginx config path
+  file: 
+    path: /{{ nginx_basedir }}/conf.d
+    state: directory
+    mode: 755
+```
 
 vim install.yml
+```js
 - name: Create Nginx user
   user: name={{ nginx_user }} state=present createhome=no shell=/sbin/nologin
-- name: Start Nginx Service
-  service: name=nginx state=started
 - name: Add Boot Start Nginx Service
   shell: chkconfig --level 345 nginx on
 - name: Delete Nginx compression files
-  shell: rm -rf /tmp/nginx.tar.gz
+  file: 
+    path: /tmp/{{ nginx_ver }}.tar.gz
+    state: absent
+- name: Delete Nginx Decompression directory
+  file: 
+    path: /tmp/{{ nginx_ver }}
+    state: absent
+```
 
-main 配置包含 copy 跟 install
+main.yml 配置包含 copy.yml 跟 install.yml
 vim main.yml
-- include: copy.yml
-- include: install.yml
-
+```js
+- import_tasks: copy.yml
+- import_tasks: install.yml
+```
 7. 编辑总入口文件
-cd ../../nginx_install
+cd /ansible-test/nginx
+```
 vim install.yml
 ---
-- hosts:192.168.32.105
+- hosts: jekyll-blog
   remote_user: root
   gather_facts: True
   roles:
     - common
     - install
-
+```
 8.安装
 ansible-playbook install.yml
 
