@@ -250,9 +250,7 @@ esac
 3、文件处理
 common目录下操作：
 \# cd /ansible-test/nginx/roles/common/tasks  
-
 \# vim main.yml  
-
 ```
 - name: Install initialization require software
   yum: name=\{\{ item \}\} state=installed
@@ -266,15 +264,10 @@ common目录下操作：
 install目录下操作:  
 
 \# cd /ansible-test/nginx/roles/install  
-
 \# cp /usr/local/src/nginx-1.8.1.tar.gz ./files/  
- 
 \# cp /usr/local/src/nginx.conf ./templates/  
-
 \# cp /usr/local/src/nginx templates/  
-
 \# vim vars/main.yml  
-
 ```
 nginx_user: www
 nginx_group: www
@@ -284,9 +277,7 @@ nginx_basedir: /etc/nginx
 ```
 
 \# cd tasks  
-
 \# vim copy.yml  
-
 ```
 - name: Copy Nginx Software
   copy: src=\{\{ nginx_ver \}\}.tar.gz dest=/tmp/\{\{ nginx_ver \}\}.tar.gz owner=root group=root
@@ -319,7 +310,7 @@ nginx_basedir: /etc/nginx
 ```
 
 \# vim install.yml  
- ```
+```
 - name: Create Nginx user
   user: name=\{\{ nginx_user \}\} state=present createhome=no shell=/sbin/nologin
 - name: Add Boot Start Nginx Service
@@ -336,16 +327,14 @@ nginx_basedir: /etc/nginx
 
 main.yml 配置包含 copy.yml 和 install.yml  
 \# vim main.yml  
-
 ```
 - import_tasks: copy.yml
 - import_tasks: install.yml
 ```
-4、 编辑总入口文件  
 
+4、 编辑总入口文件  
 \# cd /ansible-test/nginx  
 \# vim install.yml  
-
 ```
 ---
 - hosts: jekyll-blog
@@ -361,15 +350,11 @@ main.yml 配置包含 copy.yml 和 install.yml
 
 #### 一、Ruby以及jekyll、bundler的安装
 1、创建Ruby的安装目录  
-
 \# mkdir -p /ansible-test/ruby  
 \# cd /ansible-test/ruby  
 
-
 2、创建配置目录  
-
 \# mkdir -p roles/{common,install}/{handlers,files,meta,tasks,templates,vars}  
-  
 ```
 结构如下：
     .
@@ -403,7 +388,6 @@ main.yml 配置包含 copy.yml 和 install.yml
 common目录下操作：
 \# cd /ansible-test/ruby/roles/common/tasks  
 \# vim main.yml  
-
 ```
 - name: Install initialization require software
   yum: name=\{\{ item \}\} state=installed
@@ -413,7 +397,6 @@ common目录下操作：
     - openssl-devel
 ```
 install目录下操作:  
-
 \# cd /ansible-test/ruby/roles/install  
 \# vim vars/main.yml  
 ```
@@ -463,7 +446,6 @@ ruby_ver: ruby-2.3.0
 ```
 
 main.yml 配置包含 remove.yml 和 install.yml  
-
 \# vim main.yml  
 ```
 - import_tasks: install.yml
