@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Ansible
-permalink: /ansibles/
+permalink: /ansible-deployment-nginx/
 ---
  
 -------
