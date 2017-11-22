@@ -5,13 +5,16 @@ permalink: /ansible-install-nginx/
 ---
  
 -------
-创建Ansible的安装目录</br>
-\# mkdir /ansible-test/nginx</br>
-\# cd /ansible-test/nginx</br>
+创建Ansible的安装目录  
+
+\# mkdir /ansible-test/nginx  
+
+\# cd /ansible-test/nginx  
+
 
 创建配置目录
 \# mkdir -p roles/{common,install}/{handlers,files,meta,tasks,templates,vars}  
-
+  
 ```
 结构如下：
     .
@@ -43,11 +46,13 @@ permalink: /ansible-install-nginx/
 
 6、文件处理
 common目录下操作：
-\# cd /ansible-test/nginx/roles/common/tasks</br>
-\# vim main.yml</br>
+\# cd /ansible-test/nginx/roles/common/tasks  
+
+\# vim main.yml  
+
 ```
 - name: Install initialization require software
-  yum: name=\{{ item \}} state=installed
+  yum: name=\{\{ item \}\} state=installed
   with_items:
     - gcc
     - gcc-c++
@@ -56,11 +61,16 @@ common目录下操作：
     - openssl-devel
 ```
 install目录下操作:
-\# cd /ansible-test/nginx/roles/install</br>
-\# cp /usr/local/src/nginx-1.8.1.tar.gz ./files/</br>
-\# cp /usr/local/src/nginx.conf ./templates/</br>
-\# cp /usr/local/src/nginx templates/</br>
-\# vim vars/main.yml</br>
+\# cd /ansible-test/nginx/roles/install  
+
+\# cp /usr/local/src/nginx-1.8.1.tar.gz ./files/  
+ 
+\# cp /usr/local/src/nginx.conf ./templates/  
+
+\# cp /usr/local/src/nginx templates/  
+
+\# vim vars/main.yml  
+
 ```
 nginx_user: www
 nginx_group: www
@@ -69,64 +79,69 @@ nginx_ver: nginx-1.8.1
 nginx_basedir: /etc/nginx
 ```
 
-\# cd tasks</br>
-\# vim copy.yml</br>
+\# cd tasks  
+
+\# vim copy.yml  
+
 ```
 - name: Copy Nginx Software
-  copy: src=\{{ nginx_ver \}}.tar.gz dest=/tmp/\{{ nginx_ver \}}.tar.gz owner=root group=root
+  copy: src=\{\{ nginx_ver \}\}.tar.gz dest=/tmp/\{\{ nginx_ver \}\}.tar.gz owner=root group=root
 - name: Uncompression Nginx Software
   unarchive: 
-    src: /tmp/\{{ nginx_ver \}}.tar.gz
+    src: /tmp/\{\{ nginx_ver \}\}.tar.gz
     dest: /tmp/
     remote_src: yes
 - name: Setting Nginx Configure
-  shell: ./configure --prefix=\{{ nginx_basedir \}} --sbin-path=/usr/sbin/nginx --conf-path=\{{ nginx_basedir \}}/nginx.conf --without-http_memcached_module --with-mail_ssl_module --with-http_flv_module --with-http_dav_module --with-http_realip_module --with-http_addition_module --with-http_sub_module --with-http_gunzip_module --user=\{{ nginx_user \}} --group=\{{ nginx_group \}} --with-http_stub_status_module --with-http_ssl_module --with-http_gzip_static_module --with-pcre --error-log-path=\{{ nginx_basedir \}}/logs/error.log --http-log-path=\{{ nginx_basedir \}}/logs/access.log
+  shell: ./configure --prefix=\{\{ nginx_basedir \}\} --sbin-path=/usr/sbin/nginx --conf-path=\{\{ nginx_basedir \}\}/nginx.conf --without-http_memcached_module --with-mail_ssl_module --with-http_flv_module --with-http_dav_module --with-http_realip_module --with-http_addition_module --with-http_sub_module --with-http_gunzip_module --user=\{\{ nginx_user \}\} --group=\{\{ nginx_group \}\} --with-http_stub_status_module --with-http_ssl_module --with-http_gzip_static_module --with-pcre --error-log-path=\{\{ nginx_basedir \}\}/logs/error.log --http-log-path=\{\{ nginx_basedir \}\}/logs/access.log
   args:
-    chdir: /tmp/\{{ nginx_ver \}}
+    chdir: /tmp/\{\{ nginx_ver \}\}
 - name: Compile Nginx
   shell: make
   args:
-    chdir: /tmp/\{{ nginx_ver \}}
+    chdir: /tmp/\{\{ nginx_ver \}\}
 - name: Install Nginx
   shell: make install
   args:
-    chdir: /tmp/\{{ nginx_ver \}}
+    chdir: /tmp/\{\{ nginx_ver \}\}
 - name: Copy Nginx Start Script
   template: src=nginx dest=/etc/init.d/nginx owner=root group=root mode=0755
 - name: Copy Nginx Config
-  template: src=nginx.conf dest=\{{ nginx_basedir \}}/ owner=root group=root mode=0644
+  template: src=nginx.conf dest=\{\{ nginx_basedir \}\}/ owner=root group=root mode=0644
 - name: Create Nginx config path
   file: 
-    path: /\{{ nginx_basedir \}}/conf.d
+    path: /\{\{ nginx_basedir \}\}/conf.d
     state: directory
     mode: 755
 ```
 
-\# vim install.yml</br>
+\# vim install.yml  
 ```
 - name: Create Nginx user
-  user: name=\{{ nginx_user \}} state=present createhome=no shell=/sbin/nologin
+  user: name=\{\{ nginx_user \}\} state=present createhome=no shell=/sbin/nologin
 - name: Add Boot Start Nginx Service
   shell: chkconfig --level 345 nginx on
 - name: Delete Nginx compression files
   file: 
-    path: /tmp/\{{ nginx_ver \}}.tar.gz
+    path: /tmp/\{\{ nginx_ver \}\}.tar.gz
     state: absent
 - name: Delete Nginx Decompression directory
   file: 
-    path: /tmp/\{{ nginx_ver \}}
+    path: /tmp/\{\{ nginx_ver \}\}
     state: absent
 ```
 
 main.yml 配置包含 copy.yml 跟 install.yml
-\# vim main.yml</br>
+\# vim main.yml  
+
 ```
 - import_tasks: copy.yml
 - import_tasks: install.yml
 ```
 7. 编辑总入口文件
-\# cd /ansible-test/nginx</br>
-\# vim install.yml</br>
+\# cd /ansible-test/nginx  
+
+\# vim install.yml  
+
 ```
 ---
 - hosts: jekyll-blog
