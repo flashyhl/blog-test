@@ -108,7 +108,7 @@ nginx_basedir: /etc/nginx
 - name: Copy Nginx Start Script
   template: src=nginx dest=/etc/init.d/nginx owner=root group=root mode=0755
 - name: Copy Nginx Config
-  template: src=nginx.conf dest={{ nginx_basedir }}/ owner=root group=root mode=0644
+  template: src=nginx.conf dest=”{{ nginx_basedir }}”/ owner=root group=root mode=0644
 - name: Create Nginx config path
   file: 
     path: /\{\{ nginx_basedir \}\}/conf.d
