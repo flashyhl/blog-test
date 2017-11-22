@@ -87,7 +87,7 @@ http{
                                     '$status $body_bytes_sent "$request_time" "$http_referer" '
                                     '"$http_user_agent" $http_x_forwarded_for ';
 
-        log_format  main  '$remote_addr - $remote_user [$time_local] [$request_time $upstream_response_time] "\$request" '
+        log_format  main  '$remote_addr - $remote_user [$time_local] [$request_time $upstream_response_time] "$request" '
                       '$status $body_bytes_sent "$http_referer" '
                       '"$http_user_agent" "$http_x_forwarded_for" "$http_cookie" ';
 
@@ -319,8 +319,7 @@ nginx_basedir: /etc/nginx
 ```
 
 \# vim install.yml  
- 
-```
+ ```
 - name: Create Nginx user
   user: name=\{\{ nginx_user \}\} state=present createhome=no shell=/sbin/nologin
 - name: Add Boot Start Nginx Service
@@ -336,7 +335,6 @@ nginx_basedir: /etc/nginx
 ```
 
 main.yml 配置包含 copy.yml 和 install.yml  
-
 \# vim main.yml  
 
 ```
@@ -346,7 +344,6 @@ main.yml 配置包含 copy.yml 和 install.yml
 4、 编辑总入口文件  
 
 \# cd /ansible-test/nginx  
-
 \# vim install.yml  
 
 ```
@@ -366,7 +363,6 @@ main.yml 配置包含 copy.yml 和 install.yml
 1、创建Ruby的安装目录  
 
 \# mkdir -p /ansible-test/ruby  
-
 \# cd /ansible-test/ruby  
 
 
@@ -406,7 +402,6 @@ main.yml 配置包含 copy.yml 和 install.yml
 3、文件处理
 common目录下操作：
 \# cd /ansible-test/ruby/roles/common/tasks  
-
 \# vim main.yml  
 
 ```
@@ -421,15 +416,12 @@ install目录下操作:
 
 \# cd /ansible-test/ruby/roles/install  
 \# vim vars/main.yml  
-
 ```
 ruby_ver: ruby-2.3.0
 ```
 
 \# cd tasks  
-
 \# vim install.yml  
-
 ```
 - name: Copy Ruby Software
   copy: src=\{\{ ruby_ver \}\}.tar.gz dest=/tmp/\{\{ ruby_ver \}\}.tar.gz owner=root group=root
@@ -457,9 +449,8 @@ ruby_ver: ruby-2.3.0
   with_items:
     - { package: "jekyll" }
     - { package: "bundler" }```
-
+```
 \# vim remove.yml  
- 
 ```
 - name: Delete Ruby compression files
   file: 
@@ -474,16 +465,13 @@ ruby_ver: ruby-2.3.0
 main.yml 配置包含 remove.yml 和 install.yml  
 
 \# vim main.yml  
-
 ```
 - import_tasks: install.yml
 - import_tasks: remove.yml
 ```
 4、 编辑总入口文件  
-
 \# cd /ansible-test/ruby  
 \# vim install.yml  
-
 ```
 ---
 - hosts: jekyll-blog
@@ -493,7 +481,7 @@ main.yml 配置包含 remove.yml 和 install.yml
     - common
     - install
 ```
-5、 安装
+5、 安装  
 \# cd cd /ansible-test/ruby  
 \# ansible-playbook install.yml
 
