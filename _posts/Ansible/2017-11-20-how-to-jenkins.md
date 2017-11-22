@@ -1,18 +1,20 @@
 ---
 layout: page
-title: Jenkins
-permalink: /jenkins/
+title: Ansible
+permalink: /ansibles/
 ---
- 持续集成是个简单重复劳动，人来操作费时费力，使用自动化构建工具完成是最好不过的了。
+ 
+-------
+> 1. 持续集成是个简单重复劳动，人来操作费时费力，使用自动化构建工具完成是最好不过的了。
 为了实现这个要求，我选择了Jenkins。
 从http://mirrors.jenkins-ci.org/windows/latest下载windows下的最新安装版jenkins。（如果不能安装，从http://mirrors.jenkins-ci.org/war/latest/jenkins.war下载war包，手动配置，配置说明参见https://wiki.jenkins-ci.org/display/JENKINS/Use+Jenkins）。
-1.安装
+## 1.安装
 这里直接使用安装包，安装过程很简单，这里就再说明了。
 安装后自动创建了一个windows服务：Jenkins，默认使用的端口是8080，如果需要修改，打开安装目录下的jenkins.xml文件，修改  <arguments>-Xrs -Xmx256m -Dhudson.lifecycle=hudson.lifecycle.WindowsServiceLifecycle -jar "%BASE%\jenkins.war" --httpPort=8081</arguments>后保存，启动jenkins服务。
 打开http://192.168.0.10:8081/，看到类似下面的界面（我这里已经创建了一个任务）：
 
 说明jenkins已经安装成功。
-2. 创建任务
+## 2. 创建任务
   2.1 点“新Job”,界面如下：
 
 输入任务名称，任意名称都可以，但最好是有意义的名称，这里输入的名称和项目名称相同为hummer
@@ -27,7 +29,7 @@ permalink: /jenkins/
 2.6 设置邮件通知 
 勾选“E-mail Notification”，在recipients中录入要接收邮件的邮箱。
 点“保存”，完成设置
-3. 在工作区域的左边菜单上点“立即构建”，开始构建项目，
+## 3. 在工作区域的左边菜单上点“立即构建”，开始构建项目，
 
 如果构建成功，则项目状态的S为蓝色，如果失败则为红色。
 
