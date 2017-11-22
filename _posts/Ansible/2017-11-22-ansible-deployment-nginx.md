@@ -47,7 +47,7 @@ common目录下操作：
 \# vim main.yml</br>
 ```
 - name: Install initialization require software
-  yum: name=\{{ item }\} state=installed
+  yum: name=\{{ item \}} state=installed
   with_items:
     - gcc
     - gcc-c++
@@ -73,31 +73,31 @@ nginx_basedir: /etc/nginx
 \# vim copy.yml</br>
 ```
 - name: Copy Nginx Software
-  copy: src=\{{ nginx_ver }\}.tar.gz dest=/tmp/\{{ nginx_ver }\}.tar.gz owner=root group=root
+  copy: src=\{{ nginx_ver \}}.tar.gz dest=/tmp/\{{ nginx_ver \}}.tar.gz owner=root group=root
 - name: Uncompression Nginx Software
   unarchive: 
-    src: /tmp/\{{ nginx_ver }\}.tar.gz
+    src: /tmp/\{{ nginx_ver \}}.tar.gz
     dest: /tmp/
     remote_src: yes
 - name: Setting Nginx Configure
-  shell: ./configure --prefix=\{{ nginx_basedir }\} --sbin-path=/usr/sbin/nginx --conf-path=\{{ nginx_basedir }\}/nginx.conf --without-http_memcached_module --with-mail_ssl_module --with-http_flv_module --with-http_dav_module --with-http_realip_module --with-http_addition_module --with-http_sub_module --with-http_gunzip_module --user=\{{ nginx_user }\} --group=\{{ nginx_group }\} --with-http_stub_status_module --with-http_ssl_module --with-http_gzip_static_module --with-pcre --error-log-path=\{{ nginx_basedir }\}/logs/error.log --http-log-path=\{{ nginx_basedir }\}/logs/access.log
+  shell: ./configure --prefix=\{{ nginx_basedir \}} --sbin-path=/usr/sbin/nginx --conf-path=\{{ nginx_basedir \}}/nginx.conf --without-http_memcached_module --with-mail_ssl_module --with-http_flv_module --with-http_dav_module --with-http_realip_module --with-http_addition_module --with-http_sub_module --with-http_gunzip_module --user=\{{ nginx_user \}} --group=\{{ nginx_group \}} --with-http_stub_status_module --with-http_ssl_module --with-http_gzip_static_module --with-pcre --error-log-path=\{{ nginx_basedir \}}/logs/error.log --http-log-path=\{{ nginx_basedir \}}/logs/access.log
   args:
-    chdir: /tmp/\{{ nginx_ver }\}
+    chdir: /tmp/\{{ nginx_ver \}}
 - name: Compile Nginx
   shell: make
   args:
-    chdir: /tmp/\{{ nginx_ver }\}
+    chdir: /tmp/\{{ nginx_ver \}}
 - name: Install Nginx
   shell: make install
   args:
-    chdir: /tmp/\{{ nginx_ver }\}
+    chdir: /tmp/\{{ nginx_ver \}}
 - name: Copy Nginx Start Script
   template: src=nginx dest=/etc/init.d/nginx owner=root group=root mode=0755
 - name: Copy Nginx Config
-  template: src=nginx.conf dest=\{{ nginx_basedir }\}/ owner=root group=root mode=0644
+  template: src=nginx.conf dest=\{{ nginx_basedir \}}/ owner=root group=root mode=0644
 - name: Create Nginx config path
   file: 
-    path: /\{{ nginx_basedir }\}/conf.d
+    path: /\{{ nginx_basedir \}}/conf.d
     state: directory
     mode: 755
 ```
@@ -105,16 +105,16 @@ nginx_basedir: /etc/nginx
 \# vim install.yml</br>
 ```
 - name: Create Nginx user
-  user: name=\{{ nginx_user }\} state=present createhome=no shell=/sbin/nologin
+  user: name=\{{ nginx_user \}} state=present createhome=no shell=/sbin/nologin
 - name: Add Boot Start Nginx Service
   shell: chkconfig --level 345 nginx on
 - name: Delete Nginx compression files
   file: 
-    path: /tmp/\{{ nginx_ver }\}.tar.gz
+    path: /tmp/\{{ nginx_ver \}}.tar.gz
     state: absent
 - name: Delete Nginx Decompression directory
   file: 
-    path: /tmp/\{{ nginx_ver }\}
+    path: /tmp/\{{ nginx_ver \}}
     state: absent
 ```
 
