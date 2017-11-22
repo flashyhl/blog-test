@@ -1,37 +1,102 @@
 ---
 layout: page
-title: Ansible
-permalink: /ansible-deployment-nginx/
+title: Ansible Install Nginx
+permalink: /ansible-install-nginx/
 ---
  
 -------
-> 1. 持续集成是个简单重复劳动，人来操作费时费力，使用自动化构建工具完成是最好不过的了。
-为了实现这个要求，我选择了Jenkins。
-从http://mirrors.jenkins-ci.org/windows/latest下载windows下的最新安装版jenkins。（如果不能安装，从http://mirrors.jenkins-ci.org/war/latest/jenkins.war下载war包，手动配置，配置说明参见https://wiki.jenkins-ci.org/display/JENKINS/Use+Jenkins）。
-## 1.安装
-这里直接使用安装包，安装过程很简单，这里就再说明了。
-安装后自动创建了一个windows服务：Jenkins，默认使用的端口是8080，如果需要修改，打开安装目录下的jenkins.xml文件，修改  <arguments>-Xrs -Xmx256m -Dhudson.lifecycle=hudson.lifecycle.WindowsServiceLifecycle -jar "%BASE%\jenkins.war" --httpPort=8081</arguments>后保存，启动jenkins服务。
-打开http://192.168.0.10:8081/，看到类似下面的界面（我这里已经创建了一个任务）：
+创建Ansible的安装目录
+mkdir /ansible-test/nginx
+cd /ansible-test/nginx
+创建配置目录
+mkdir -p roles/{common,install}/{handlers,files,meta,tasks,templates,vars}
+###### 结构如下：
+---
+    .
+    └── roles
+        ├── common
+        │   ├── files
+        │   ├── handlers
+        │   ├── meta
+        │   ├── tasks
+        │   ├── templates
+        │   └── vars
+        └── install
+            ├── files
+            ├── handlers
+            ├── meta
+            ├── tasks
+            ├── templates
+            └── vars
+  ---      
+roles 目录下有两个角色，common为一些准备操作，install 为安装nginx 的操作。
+每个角色下有几个目录：
+handlers :当发生改变时要执行的操作，通常用在配置文件发生改变，重启服务
+files :为安装时用到的一些文件
+meta :为说明信息，说明角色依赖等信息
+tasks :核心的配置文件
+templates :通常存一些配置文件，启动脚本等模板文件
+vars : 定义的变量
 
-说明jenkins已经安装成功。
-## 2. 创建任务
-  2.1 点“新Job”,界面如下：
+6、文件处理
+common:
+cd common;mkdir tasks;cd tasks
+vim main.yml
+- name: Install initialization require software
+  yum: name={{ item }} state=installed
+  with_items:
+    - gcc
+    - gcc-c++
+    - zlib-devel
+    - pcre-devel
+    - openssl-devel
+install:
+cd ../../install; mkdir tasks vars files templates
+cp /usr/local/nginx.tar.gz files/
+cp /usr/local/nginx/conf/nginx.conf templates/
+cp /etc/init.d/nginx templates/
+vi vars/main.yml
+nginx_user: www
+nginx_port: 80
+nginx_basedir: /usr/local/nginx
 
-输入任务名称，任意名称都可以，但最好是有意义的名称，这里输入的名称和项目名称相同为hummer
-  2.2 选择项目类型，因我的项目是maven项目，这里选择“构建一个maven2/3项目”点击”OK“进入下一个界面。
-  2.3 界面如下：
+cd tasks
+vim copy.yml
+- name: Copy Nginx Software
+  copy: src=nginx.tar.gz dest=/tmp/nginx.tar.gz owner=root group=root
+- name: Uncompression Nginx Software
+  shell: tar zxf /tmp/nginx.tar.gz -C /usr/local/
+- name: Copy Nginx Start Script
+  template: src=nginx dest=/etc/init.d/nginx owner=root group=root mode=0755
+- name: Copy Nginx Config
+  template: src=nginx.conf dest={{ nginx_basedir }}/conf/ owner=root group=root mode=0644
 
-源代码管理根据自己的需要进行选择，我的源代码是使用svn管理的，这里选择“Subversion Modules”，在"Repository URL"录入你的svn仓库地址；第一次录入时还需要录入svn仓库的用户名和口令。
-刚才的那个界面比较大，向下滚动，中间部分的界面如下：
-构建触发器，我选择“Build whenever a SNAPSHOT dependency is built”，意思是依赖于快照的构建，应该是当svn有修改时就构建项目。
-2.4 build设置不用修改，就使用pom.xml，目标选项也不用修改。
-2.5 设置构建后的步骤，（Post Steps，可选设置 ），我这里要求构建成功后把war文件复制到指定的目录，然后停运tomcat，删除项目web目录，启动tomcat。
-2.6 设置邮件通知 
-勾选“E-mail Notification”，在recipients中录入要接收邮件的邮箱。
-点“保存”，完成设置
-## 3. 在工作区域的左边菜单上点“立即构建”，开始构建项目，
+vim install.yml
+- name: Create Nginx user
+  user: name={{ nginx_user }} state=present createhome=no shell=/sbin/nologin
+- name: Start Nginx Service
+  service: name=nginx state=started
+- name: Add Boot Start Nginx Service
+  shell: chkconfig --level 345 nginx on
+- name: Delete Nginx compression files
+  shell: rm -rf /tmp/nginx.tar.gz
 
-如果构建成功，则项目状态的S为蓝色，如果失败则为红色。
+main 配置包含 copy 跟 install
+vim main.yml
+- include: copy.yml
+- include: install.yml
 
-构建完成，左边菜单会显示有“控制台输出”，点击可以查看控制台详细输出。构建错误时也可以根据相应的错误信息进行修改。
+7. 编辑总入口文件
+cd ../../nginx_install
+vim install.yml
+---
+- hosts:192.168.32.105
+  remote_user: root
+  gather_facts: True
+  roles:
+    - common
+    - install
+
+8.安装
+ansible-playbook install.yml
 
