@@ -7,9 +7,9 @@ permalink: /create-jekyll-blogsite/
 -------
 ####一、创建jekyll站点：  
 1、创建站点：  
-\# mkdir /jekyll-blog   #创建目录
+\# mkdir /jekyll-blog   #创建目录  
 \# cd /jekyll-blog       
-\# jekyll new blogsite  #建立博客站点 
+\# jekyll new blogsite  #建立博客站点   
 ``` 
 Running bundle install in /jekyll-blog/blogsite... 
   Bundler: Don't run Bundler as root. Bundler can ask for sudo if it is needed, and
@@ -60,19 +60,26 @@ New jekyll site installed in /jekyll-blog/blogsite.
 
 2 directories, 7 files
 ```
-#### 二、站点上传到GitHub仓库
-1、创建Nginx的安装目录  
-\# mkdir -p /ansible-test/nginx  
-\# cd /ansible-test/nginx  
-
-
+这是初始化的站点，下面需要经过修改配置以及添加自己的博客文章，站点可以使用以下命令预览：  
 ```
-nginx_user: www
-nginx_group: www
-nginx_bin: /usr/sbin
-nginx_ver: nginx-1.8.1
-nginx_basedir: /etc/nginx
+jekyll server -H 192.168.106.132 -P 5500
 ```
+在浏览器里：http://192.168.106.132:5500 查看。   
+#### 二、站点上传到GitHub仓库  
+现在调整的差不多了就可以把站点代码放到GitHub仓库里
+1、在自己的GitHub账号里新建仓库  
+2、克隆前面创建的仓库   
+```
+\# git clone https://github.com/flashyhl/blog-test  
+```
+3、把之前修改好的站点文件拷贝到当前的blog-test目录里面   
+4、提交站点到GitHub仓库   
+```
+git add .
+git commit -m "jekyll pages commit"
+git push origin master
+```
+这样就可以把Jekyll创建的站点上传到GitHub仓库里面
 
 
 
