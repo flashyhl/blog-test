@@ -97,6 +97,8 @@ total 10
 -rw-r--r-- 1 root root  724 Nov 23 16:26 devblog.conf
 -rw-r--r-- 1 root root  732 Nov 23 16:25 stageblog.conf
 ```
+重新启动nginx服务：  
+\# /etc/init.d/nginx reload  
 
 二、创建Dev、Staging的发布脚本：  
 1、创建Dev的发布脚本  
@@ -106,7 +108,13 @@ total 10
 echo "1111111111" > /deployment/deploy_script/blog_ver_dev
 发布脚本日志目录：  
 \# mkdir /deployment/logs -p  
-发布脚本：  
+发布流程：  
+* 从github仓库拉取代码
+* 比较版本，如果与之前的版本不一致，就进行编译，反之，就退出发布
+* 把编译好的站点文件通过rsync同步到Staging环境的目录里面
+* 删除临时日志文件
+* 修改当前存放版本信息的文件 
+发布脚本：
 \# vim /deployment/deploy_script/deploy_dev_blogsite.sh  
 ```
 #!/bin/bash
@@ -128,8 +136,6 @@ if [ "$VER" == "" ];then
    if [ "$old_ver" = "$new_ver" ];then
      echo "没有信息被提交！"
      exit 1
-   else
-     echo "$new_ver" > $deplog_script_path/blog_ver
    fi   
      
 elif  echo $VER |egrep -q "^[0-9A-Za-z]+$" ;then
@@ -161,6 +167,7 @@ if [ $? -eq 0 ]
    echo  -e "\e[31;5m Fail\e[0m Modify files Owner" |tee -a $outlog
 fi
 rm -rf $tmp_log
+echo "$new_ver" > $deplog_script_path/blog_ver
 ```
 使用方式：  
 \# cd /deployment/deploy_script  
@@ -168,7 +175,13 @@ rm -rf $tmp_log
 
 2、创建Staging环境的发布脚本  
 创建git版本比较文件  
-\# echo "1111111111" > /deployment/deploy_script/blog_ver_staging
+\# echo "1111111111" > /deployment/deploy_script/blog_ver_staging  
+发布流程：  
+* 从github仓库拉取代码
+* 比较版本，如果与之前的版本不一致，就进行编译，反之，就退出发布
+* 把编译好的站点文件通过rsync同步到Staging环境的目录里面
+* 删除临时日志文件
+* 修改当前存放版本信息的文件
 发布脚本：  
 \# vim /deployment/deploy_script/deploy_staging_blogsite.sh  
 ```
@@ -183,7 +196,7 @@ deplog_script_path=/deployment/deploy_script
 cd $blogsite_source_path
 echo -e "\n### Script exe at `date +%F/%T` by `who am i|awk '{print $1" "$2" "$5}'` ###\n" >>$outlog
 
-read -p "【更新Blogsite-Dev】请输入更新的GIT版本号,如果没有输入或10秒内无动作都将更新到最新版本:" -t 10 VER
+read -p "【更新Blogsite-Staging】请输入更新的GIT版本号,如果没有输入或10秒内无动作都将更新到最新版本:" -t 10 VER
 if [ "$VER" == "" ];then
    git pull -s recursive -X ours >$tmp_log
    old_ver=`cat $deplog_script_path/blog_ver_staging`
@@ -191,8 +204,6 @@ if [ "$VER" == "" ];then
    if [ "$old_ver" = "$new_ver" ];then
      echo "没有信息被提交！"
      exit 1
-   else
-     echo "$new_ver" > $deplog_script_path/blog_ver
    fi   
      
 elif  echo $VER |egrep -q "^[0-9A-Za-z]+$" ;then
@@ -224,10 +235,21 @@ if [ $? -eq 0 ]
    echo  -e "\e[31;5m Fail\e[0m Modify files Owner" |tee -a $outlog
 fi
 rm -rf $tmp_log
+echo "$new_ver" > $deplog_script_path/blog_ver
 ```
 使用方式：  
 \# cd /deployment/deploy_script  
 \# bash  deploy_staging_blogsite.sh  
+
+三、创建定时任务：
+1、Dev环境 每10分钟更新一次；  
+2、Staging环境 每1小时更新一次  
+\# crontab -e  
+```
+*/10 * * * * bash /deployment/deploy_script/deploy_dev_blogsite.sh
+0 */1 * * * bash /deployment/deploy_script/deploy_staging_blogsite.sh
+```
+
 
 
 
