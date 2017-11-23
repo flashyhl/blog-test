@@ -7,9 +7,10 @@ permalink: /deployment-blogsite/
 -------
 站点规划
 ```
-| 环境			 | 使用IP地址访问 		 | 端口	| 所在路径(已创建)					|
-| Dev				| 118.31.20.178     | 7701 | /data/httpd/devblog   |
-| Staging		| 118.31.20.178			| 7700 | /date/httpd/stageblog |
+| 环境 | 使用IP地址访问 | 端口 | 所在路径(已创建) | 源码路径 |
+| --- | --- | --- | --- | --- |
+| Dev | 118.31.20.178 | 7701 | /data/httpd/devblog | /deployment/source_code/dev_blogsite |
+| Staging | 118.31.20.178 | 7700 | /date/httpd/stageblog | /deployment/source_code/staging_blogsite |
 ```
 源代码路径：/deployment/source_code/blogsite 已经从GitHub仓库拉取  
 
