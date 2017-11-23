@@ -6,13 +6,14 @@ permalink: /deployment-blogsite/
  
 -------
 站点规划
-***
-| 环境 | 使用IP地址访问 | 端口 | 所在路径(已创建) | 源码路径 |
-| --- | --- | --- | --- | --- |
-| Dev | 118.31.20.178 | 7701 | /data/httpd/devblog | /deployment/source_code/dev_blogsite |
-| Staging | 118.31.20.178 | 7700 | /date/httpd/stageblog | /deployment/source_code/staging_blogsite |
-***
-源代码路径：/deployment/source_code/blogsite 已经从GitHub仓库拉取  
+Dev环境：  
+访问方式：http://118.31.20.178:7701  
+所在路径(已创建)：/data/httpd/devblog  
+源码路径(已拉取)：/deployment/source_code/dev_blogsite  
+Staging环境：  
+访问方式：http://118.31.20.178:7700  
+所在路径(已创建)：/data/httpd/stageblog  
+源码路径(已拉取)：/deployment/source_code/staging_blogsite  
 
 一、Dev、Staging站点的Nginx配置：  
 1、Dev站点的Nginx配置：  
@@ -97,7 +98,7 @@ total 10
 -rw-r--r-- 1 root root  732 Nov 23 16:25 stageblog.conf
 ```
 
-####二、创建Dev、Staging的发布脚本： 
+二、创建Dev、Staging的发布脚本： 
 1、创建Dev的发布脚本  
 发布脚本目录：  
 \# mkdir /deployment/deploy_script -p  
