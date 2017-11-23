@@ -32,7 +32,7 @@ git add .
 git commit -m "提交$curr_date-fortune"
 git push origin master
 ```
-添加定时任务，每5分钟执行一次，如下：  
+添加定时任务，每7分钟执行一次，如下：  
 \# crontab -e  
 ```
 */5 * * * * bash /usr/local/src/site.sh
