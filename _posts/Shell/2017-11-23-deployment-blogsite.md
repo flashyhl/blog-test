@@ -102,6 +102,8 @@ total 10
 1、创建Dev的发布脚本  
 发布脚本目录：  
 \# mkdir /deployment/deploy_script -p  
+创建git版本比较文件  
+echo "1111111111" > /deployment/deploy_script/
 发布脚本日志目录：  
 \# mkdir /deployment/logs -p  
 发布脚本：  
@@ -109,7 +111,7 @@ total 10
 ```
 #!/bin/bash
 
-blogsite_source_path=/deployment/source_code/blogsite
+blogsite_source_path=/deployment/source_code/dev_blogsite
 outlog=/deployment/logs/blogsite_dev.log
 tmp_log=/tmp/blogsite.txt
 blog_websit=/data/httpd/devblog
@@ -118,10 +120,10 @@ deplog_script_path=/deployment/deploy_script
 cd $blogsite_source_path
 echo -e "\n### Script exe at `date +%F/%T` by `who am i|awk '{print $1" "$2" "$5}'` ###\n" >>$outlog
 
-read -p "【更新Blogsite】请输入更新的GIT版本号,如果没有输入或10秒内无动作都将更新到最新版本:" -t 10 VER
+read -p "【更新Blogsite-Dev】请输入更新的GIT版本号,如果没有输入或10秒内无动作都将更新到最新版本:" -t 10 VER
 if [ "$VER" == "" ];then
    git pull -s recursive -X ours >$tmp_log
-   old_ver=`cat $deplog_script_path/blog_ver`
+   old_ver=`cat $deplog_script_path/blog_ver_dev`
    new_ver=`git log | head -1 | awk '{print $2}'`
    if [ "$old_ver" = "$new_ver" ];then
      echo "没有信息被提交！"
