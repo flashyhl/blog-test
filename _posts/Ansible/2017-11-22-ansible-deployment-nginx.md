@@ -12,7 +12,6 @@ permalink: /ansible-install-env/
 \# wget https://ruby.taobao.org/mirrors/ruby/2.3/ruby-2.3.0.tar.gz -P /usr/local/src/  
 Nginx 配置文件如下：  
 vim /usr/local/src/nginx.conf  
-
 ```
 user  www www;
 worker_processes  4;
@@ -213,7 +212,6 @@ esac
 
 
 2、创建配置目录  
-
 \# mkdir -p roles/{common,install}/{handlers,files,meta,tasks,templates,vars}  
 ```
 结构如下：
@@ -259,7 +257,6 @@ common目录下操作：
     - openssl-devel
 ```
 install目录下操作:  
-
 \# cd /ansible-test/nginx/roles/install  
 \# cp /usr/local/src/nginx-1.8.1.tar.gz ./files/  
 \# cp /usr/local/src/nginx.conf ./templates/  
@@ -463,6 +460,6 @@ main.yml 配置包含 remove.yml 和 install.yml
 ```
 
 5、 安装  
-\# cd cd /ansible-test/ruby  
+\# cd /ansible-test/ruby  
 \# ansible-playbook install.yml
 
