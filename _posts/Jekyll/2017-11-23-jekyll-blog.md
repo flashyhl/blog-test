@@ -5,7 +5,7 @@ permalink: /create-jekyll-blogsite/
 ---
  
 -------
-####一、创建jekyll站点：  
+一、创建jekyll站点:    
 1、创建站点：  
 \# mkdir /jekyll-blog  
 \# cd /jekyll-blog         

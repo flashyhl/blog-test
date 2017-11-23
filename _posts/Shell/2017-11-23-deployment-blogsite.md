@@ -5,15 +5,15 @@ permalink: /deployment-blogsite/
 ---
  
 -------
-####站点规划
-
-| 环境 | 使用IP地址访问 | 端口 | 所在路径(已创建) |
-| --- | --- | --- | --- |
-| Dev | 118.31.20.178 | 7701 | /data/httpd/devblog |
-| Staging | 118.31.20.178 | 7700 | /date/httpd/stageblog |
+站点规划
+```
+| 环境			 | 使用IP地址访问 		 | 端口	| 所在路径(已创建)					|
+| Dev				| 118.31.20.178     | 7701 | /data/httpd/devblog   |
+| Staging		| 118.31.20.178			| 7700 | /date/httpd/stageblog |
+```
 源代码路径：/deployment/source_code/blogsite 已经从GitHub仓库拉取  
 
-####一、Dev、Staging站点的Nginx配置：  
+一、Dev、Staging站点的Nginx配置：  
 1、Dev站点的Nginx配置：  
 \# vim  /etc/nginx/conf.d/devblog.conf  
 ```
