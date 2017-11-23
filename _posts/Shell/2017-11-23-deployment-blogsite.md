@@ -1,71 +1,165 @@
 ---
 layout: page
-title: 创建Blog站点并且上传到GitHub仓库
-permalink: /create-jekyll-blogsite/
+title: Dev、Staging站点的创建以及部署发布
+permalink: /deployment-blogsite/
 ---
  
 -------
-####一、创建jekyll站点：  
-1、创建站点：  
-\# mkdir /jekyll-blog  
-\# cd /jekyll-blog         
-\# jekyll new blogsite  
-``` 
-Running bundle install in /jekyll-blog/blogsite... 
-  Bundler: Don't run Bundler as root. Bundler can ask for sudo if it is needed, and
-  Bundler: installing your bundle as root will break this application for all non-root
-  Bundler: users on this machine.
-  Bundler: The dependency tzinfo-data (>= 0) will be unused by any of the platforms Bundler is installing for. Bundler is installing for ruby but the dependency is only for x86-mingw32, x86-mswin32, x64-mingw32, java. To add those platforms to the bundle, run `bundle lock --add-platform x86-mingw32 x86-mswin32 x64-mingw32 java`.
-  Bundler: Fetching gem metadata from https://rubygems.org/...........
-  Bundler: Fetching gem metadata from https://rubygems.org/.
-  Bundler: Resolving dependencies...
-  Bundler: Using public_suffix 3.0.1
-  Bundler: Using addressable 2.5.2
-  Bundler: Using bundler 1.16.0
-  Bundler: Using colorator 1.1.0
-  Bundler: Using ffi 1.9.18
-  Bundler: Using forwardable-extended 2.6.0
-  Bundler: Using rb-fsevent 0.10.2
-  Bundler: Using rb-inotify 0.9.10
-  Bundler: Using sass-listen 4.0.0
-  Bundler: Using sass 3.5.3
-  Bundler: Using jekyll-sass-converter 1.5.0
-  Bundler: Using listen 3.0.8
-  Bundler: Using jekyll-watch 1.5.0
-  Bundler: Using kramdown 1.15.0
-  Bundler: Using liquid 4.0.0
-  Bundler: Using mercenary 0.3.6
-  Bundler: Using pathutil 0.16.0
-  Bundler: Using rouge 2.2.1
-  Bundler: Using safe_yaml 1.0.4
-  Bundler: Using jekyll 3.6.2
-  Bundler: Using jekyll-feed 0.9.2
-  Bundler: Using minima 2.1.1
-  Bundler: Bundle complete! 4 Gemfile dependencies, 22 gems now installed.
-  Bundler: Use `bundle info [gemname]` to see where a bundled gem is installed.
-New jekyll site installed in /jekyll-blog/blogsite. 
-```
-创建的站点目录如下：  
-```  
-.
-└── blogsite
-    ├── 404.html
-    ├── about.md
-    ├── _config.yml
-    ├── Gemfile
-    ├── Gemfile.lock
-    ├── index.md
-    └── _posts
-        └── 2017-11-23-welcome-to-jekyll.markdown
+####站点规划
 
-2 directories, 7 files
+| 环境 | 使用IP地址访问 | 端口 | 所在路径(已创建) |
+| --- | --- | --- | --- |
+| Dev | 118.31.20.178 | 7701 | /data/httpd/devblog |
+| Staging | 118.31.20.178 | 7700 | /date/httpd/stageblog |
+源代码路径：/deployment/source_code/blogsite 已经从GitHub仓库拉取  
+
+####一、Dev、Staging站点的Nginx配置：  
+1、Dev站点的Nginx配置：  
+\# vim  /etc/nginx/conf.d/devblog.conf  
 ```
-这是初始化的站点，下面需要经过修改配置以及添加自己的博客文章，站点可以使用以下命令预览：  
+server {
+    listen       7701;
+    server_name  118.31.20.178;
+    root   /data/httpd/devblog;
+    index index.html;
+
+    location / {
+       access_log off;
+       log_not_found off;
+    }
+
+    error_page  404 400 500 502 503 504  /404.html;
+    location = 404.html {
+        root   /data/httpd/devblog;
+    }
+
+    location ~ .*\.(gif|jpg|jpeg|png|bmp|ico|swf)$ {
+        expires      5d;
+    }
+
+    location ~ .*\.(js|css)?$ {
+        expires      1h;
+    }
+
+    location = /favicon.ico {
+        log_not_found off;
+        access_log    off;
+    }
+        
+    access_log  /data/log/nginx/acclog/devblog-access.log main;
+    error_log   /data/log/nginx/errlog/devblog-error.log warn;
+    server_name_in_redirect  off;
+}
+``` 
+2、Staging站点的Nginx配置：  
+\# vim  /etc/nginx/conf.d/stageblog.conf   
+``` 
+server {
+    listen       7700;
+    server_name  118.31.20.178;
+    root   /data/httpd/stageblog;
+    index index.html;
+
+    location / {
+       access_log off;
+       log_not_found off;
+    }
+
+    error_page  404 400 500 502 503 504  /404.html;
+    location = 404.html {
+        root   /data/httpd/stageblog;
+    }
+
+    location ~ .*\.(gif|jpg|jpeg|png|bmp|ico|swf)$ {
+        expires      5d;
+    }
+
+    location ~ .*\.(js|css)?$ {
+        expires      1h;
+    }
+
+    location = /favicon.ico {
+        log_not_found off;
+        access_log    off;
+    }
+        
+    access_log  /data/log/nginx/acclog/stageblog-access.log main;
+    error_log   /data/log/nginx/errlog/stageblog-error.log warn;
+    server_name_in_redirect  off;
+}
 ```
-jekyll server -H 192.168.106.132 -P 5500
+创建的站点配置文件如下：  
+```  
+\# ll /etc/nginx/conf.d/
+total 10
+-rw-r--r-- 1 root root  724 Nov 23 16:26 devblog.conf
+-rw-r--r-- 1 root root  732 Nov 23 16:25 stageblog.conf
 ```
-在浏览器里：http://192.168.106.132:5500 查看。   
-#### 二、站点上传到GitHub仓库  
+
+####二、创建Dev、Staging的发布脚本： 
+1、创建Dev的发布脚本  
+发布脚本目录：  
+\# mkdir /deployment/deploy_script -p  
+发布脚本日志目录：  
+\# mkdir /deployment/logs -p  
+发布脚本：  
+\# vim /deployment/deploy_script/deploy_dev_blogsite.sh  
+```
+#!/bin/bash
+
+blogsite_source_path=/deployment/source_code/blogsite
+outlog=/deployment/logs/blogsite_dev.log
+tmp_log=/tmp/blogsite.txt
+blog_websit=/data/httpd/devblog
+deplog_script_path=/deployment/deploy_script
+
+cd $blogsite_source_path
+echo -e "\n### Script exe at `date +%F/%T` by `who am i|awk '{print $1" "$2" "$5}'` ###\n" >>$outlog
+
+read -p "【更新Blogsite】请输入更新的GIT版本号,如果没有输入或10秒内无动作都将更新到最新版本:" -t 10 VER
+if [ "$VER" == "" ];then
+   git pull -s recursive -X ours >$tmp_log
+   old_ver=`cat $deplog_script_path/blog_ver`
+   new_ver=`git log | head -1 | awk '{print $2}'`
+   if [ "$old_ver" = "$new_ver" ];then
+     echo "没有信息被提交！"
+     exit 1
+   else
+     echo "$new_ver" > $deplog_script_path/blog_ver
+   fi   
+     
+elif  echo $VER |egrep -q "^[0-9A-Za-z]+$" ;then
+   git reset --hard $VER >$tmp_log 
+else
+   echo "输入内容不符合要求,程序退出."
+   rm -rf $tmp_log
+   exit 1
+fi
+
+if [ $? -eq 0 ];then
+   cat $tmp_log |tee -a $outlog
+   echo  -e "\e[32;1m OK\e[0m GIT update 【$(git log |head -1)】" |tee -a $outlog
+else
+   echo  -e "\e[31;5m Fail\e[0m GIT update" |tee -a $outlog
+   rm -rf $tmp_log
+   exit 1
+fi
+rm -rf $blogsite_source_path/_site/*
+
+jekyll build
+rsync -vzrtopg --delete-after $blogsite_source_path/_site/ $blog_websit &>/dev/null
+
+chown -R www.www $blog_websit
+if [ $? -eq 0 ]
+ then
+   echo  -e "\e[32;1m OK\e[0m Modify files Owner" |tee -a $outlog
+ else
+   echo  -e "\e[31;5m Fail\e[0m Modify files Owner" |tee -a $outlog
+fi
+rm -rf $tmp_log
+```
+
+
 现在调整的差不多了就可以把站点代码放到GitHub仓库里
 1、在自己的GitHub账号里新建仓库  
 2、克隆前面创建的仓库   
