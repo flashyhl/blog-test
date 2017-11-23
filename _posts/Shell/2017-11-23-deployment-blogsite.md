@@ -98,12 +98,12 @@ total 10
 -rw-r--r-- 1 root root  732 Nov 23 16:25 stageblog.conf
 ```
 
-二、创建Dev、Staging的发布脚本： 
+二、创建Dev、Staging的发布脚本：  
 1、创建Dev的发布脚本  
 发布脚本目录：  
-\# mkdir /deployment/deploy_script -p  
+\# mkdir /deployment/deploy_script -p    
 创建git版本比较文件  
-echo "1111111111" > /deployment/deploy_script/
+echo "1111111111" > /deployment/deploy_script/blog_ver_dev
 发布脚本日志目录：  
 \# mkdir /deployment/logs -p  
 发布脚本：  
@@ -162,22 +162,73 @@ if [ $? -eq 0 ]
 fi
 rm -rf $tmp_log
 ```
+使用方式：  
+\# cd /deployment/deploy_script  
+\# bash  deploy_dev_blogsite.sh  
 
+2、创建Staging环境的发布脚本  
+创建git版本比较文件  
+\# echo "1111111111" > /deployment/deploy_script/blog_ver_staging
+发布脚本：  
+\# vim /deployment/deploy_script/deploy_staging_blogsite.sh  
+```
+#!/bin/bash
 
-现在调整的差不多了就可以把站点代码放到GitHub仓库里
-1、在自己的GitHub账号里新建仓库  
-2、克隆前面创建的仓库   
+blogsite_source_path=/deployment/source_code/staging_blogsite
+outlog=/deployment/logs/blogsite_staging.log
+tmp_log=/tmp/blogsite.txt
+blog_websit=/data/httpd/stageblog
+deplog_script_path=/deployment/deploy_script
+
+cd $blogsite_source_path
+echo -e "\n### Script exe at `date +%F/%T` by `who am i|awk '{print $1" "$2" "$5}'` ###\n" >>$outlog
+
+read -p "【更新Blogsite-Dev】请输入更新的GIT版本号,如果没有输入或10秒内无动作都将更新到最新版本:" -t 10 VER
+if [ "$VER" == "" ];then
+   git pull -s recursive -X ours >$tmp_log
+   old_ver=`cat $deplog_script_path/blog_ver_staging`
+   new_ver=`git log | head -1 | awk '{print $2}'`
+   if [ "$old_ver" = "$new_ver" ];then
+     echo "没有信息被提交！"
+     exit 1
+   else
+     echo "$new_ver" > $deplog_script_path/blog_ver
+   fi   
+     
+elif  echo $VER |egrep -q "^[0-9A-Za-z]+$" ;then
+   git reset --hard $VER >$tmp_log 
+else
+   echo "输入内容不符合要求,程序退出."
+   rm -rf $tmp_log
+   exit 1
+fi
+
+if [ $? -eq 0 ];then
+   cat $tmp_log |tee -a $outlog
+   echo  -e "\e[32;1m OK\e[0m GIT update 【$(git log |head -1)】" |tee -a $outlog
+else
+   echo  -e "\e[31;5m Fail\e[0m GIT update" |tee -a $outlog
+   rm -rf $tmp_log
+   exit 1
+fi
+rm -rf $blogsite_source_path/_site/*
+
+jekyll build
+rsync -vzrtopg --delete-after $blogsite_source_path/_site/ $blog_websit &>/dev/null
+
+chown -R www.www $blog_websit
+if [ $? -eq 0 ]
+ then
+   echo  -e "\e[32;1m OK\e[0m Modify files Owner" |tee -a $outlog
+ else
+   echo  -e "\e[31;5m Fail\e[0m Modify files Owner" |tee -a $outlog
+fi
+rm -rf $tmp_log
 ```
-git clone https://github.com/flashyhl/blog-test  
-```
-3、把之前修改好的站点文件拷贝到当前的blog-test目录里面   
-4、提交站点到GitHub仓库   
-```
-git add .
-git commit -m "jekyll pages commit"
-git push origin master
-```
-这样就可以把Jekyll创建的站点上传到GitHub仓库里面
+使用方式：  
+\# cd /deployment/deploy_script  
+\# bash  deploy_staging_blogsite.sh  
+
 
 
 
