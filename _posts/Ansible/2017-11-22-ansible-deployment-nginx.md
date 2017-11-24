@@ -7,7 +7,7 @@ permalink: /ansible-install-env/
 -------
 **安装前准备**：  
 下载 Nginx：  
-\# wget http://nginx.org/download/nginx-1.8.1.tar.gz -P /usr/local/src/nginx-1.8.1.tar.gz  
+\# wget http://nginx.org/download/nginx-1.8.1.tar.gz -P /usr/local/src/  
 下载 Rudy：  
 \# wget https://ruby.taobao.org/mirrors/ruby/2.3/ruby-2.3.0.tar.gz -P /usr/local/src/  
 Nginx 配置文件如下：  

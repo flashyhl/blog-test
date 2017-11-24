@@ -16,7 +16,7 @@
 title: Flexye 的博客
 email: flashyhl@hotmail.com
 description: >- # this means to ignore newlines until "baseurl:"
-  This website is a test site, which is where I learn new knowledge
+  这是一个博客的测试站点，它是一个学习新的知识的地方！
 
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com

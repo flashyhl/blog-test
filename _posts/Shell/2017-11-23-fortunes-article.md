@@ -1,11 +1,12 @@
 ---
 layout: page
 title: 使用Fortune命令创建文章
-permalink: /deployment-blogsite/
+permalink: /fortune-blogsite/
 ---
  
 -------
 当前博客站点源码目录：/usr/local/src/blogsite  
+为了git能够自动push文章到GitHub仓库里，需要配置使用ssh方式拉取和推送。  
 创建自动产生文章的脚本：  
 vim /usr/local/src/site.sh  
   
@@ -32,10 +33,10 @@ git add .
 git commit -m "提交$curr_date-fortune"
 git push origin master
 ```
-添加定时任务，每7分钟执行一次，如下：  
+添加定时任务，每13分钟执行一次，如下：  
 \# crontab -e  
 ```
-*/5 * * * * bash /usr/local/src/site.sh
+*/13 * * * * bash /usr/local/src/site.sh
 ```
 这样就能自动生成文章了
 

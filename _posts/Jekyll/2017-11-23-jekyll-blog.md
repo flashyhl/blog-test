@@ -66,7 +66,7 @@ jekyll server -H 192.168.106.132 -P 5500
 ```
 在浏览器里：http://192.168.106.132:5500 查看。   
 #### 二、站点上传到GitHub仓库  
-现在调整的差不多了就可以把站点代码放到GitHub仓库里
+现在调整的差不多了就可以把站点代码放到GitHub仓库里  
 1、在自己的GitHub账号里新建仓库  
 2、克隆前面创建的仓库   
 ```
@@ -79,7 +79,7 @@ git add .
 git commit -m "jekyll pages commit"
 git push origin master
 ```
-这样就可以把Jekyll创建的站点上传到GitHub仓库里面
+这样就可以把Jekyll创建的站点上传到GitHub仓库里面。
 
 
 

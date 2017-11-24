@@ -134,7 +134,7 @@ if [ "$VER" == "" ];then
    old_ver=`cat $deplog_script_path/blog_ver_dev`
    new_ver=`git log | head -1 | awk '{print $2}'`
    if [ "$old_ver" = "$new_ver" ];then
-     echo "没有信息被提交！"
+     echo "没有信息被提交！" >> $outlog
      exit 1
    fi   
      
@@ -154,9 +154,9 @@ else
    rm -rf $tmp_log
    exit 1
 fi
-rm -rf $blogsite_source_path/_site/*
 
-jekyll build
+rm -rf $blogsite_source_path/_site/*
+cd $blogsite_source_path && /usr/local/bin/jekyll build >> $outlog
 rsync -vzrtopg --delete-after $blogsite_source_path/_site/ $blog_websit &>/dev/null
 
 chown -R www.www $blog_websit
@@ -167,7 +167,7 @@ if [ $? -eq 0 ]
    echo  -e "\e[31;5m Fail\e[0m Modify files Owner" |tee -a $outlog
 fi
 rm -rf $tmp_log
-echo "$new_ver" > $deplog_script_path/blog_ver
+echo "$new_ver" > $deplog_script_path/blog_ver_dev
 ```
 使用方式：  
 \# cd /deployment/deploy_script  
@@ -196,7 +196,7 @@ deplog_script_path=/deployment/deploy_script
 cd $blogsite_source_path
 echo -e "\n### Script exe at `date +%F/%T` by `who am i|awk '{print $1" "$2" "$5}'` ###\n" >>$outlog
 
-read -p "【更新Blogsite-Staging】请输入更新的GIT版本号,如果没有输入或10秒内无动作都将更新到最新版本:" -t 10 VER
+read -p "【更新Blogsite-Dev】请输入更新的GIT版本号,如果没有输入或10秒内无动作都将更新到最新版本:" -t 10 VER
 if [ "$VER" == "" ];then
    git pull -s recursive -X ours >$tmp_log
    old_ver=`cat $deplog_script_path/blog_ver_staging`
@@ -222,9 +222,9 @@ else
    rm -rf $tmp_log
    exit 1
 fi
-rm -rf $blogsite_source_path/_site/*
 
-jekyll build
+rm -rf $blogsite_source_path/_site/*
+cd $blogsite_source_path && /usr/local/bin/jekyll build >> $outlog
 rsync -vzrtopg --delete-after $blogsite_source_path/_site/ $blog_websit &>/dev/null
 
 chown -R www.www $blog_websit
@@ -235,18 +235,18 @@ if [ $? -eq 0 ]
    echo  -e "\e[31;5m Fail\e[0m Modify files Owner" |tee -a $outlog
 fi
 rm -rf $tmp_log
-echo "$new_ver" > $deplog_script_path/blog_ver
+echo "$new_ver" > $deplog_script_path/blog_ver_staging
 ```
 使用方式：  
 \# cd /deployment/deploy_script  
 \# bash  deploy_staging_blogsite.sh  
 
 三、创建定时任务：
-1、Dev环境 每10分钟更新一次；  
+1、Dev环境 每20分钟更新一次；  
 2、Staging环境 每1小时更新一次  
 \# crontab -e  
 ```
-*/10 * * * * bash /deployment/deploy_script/deploy_dev_blogsite.sh
+*/20 * * * * bash /deployment/deploy_script/deploy_dev_blogsite.sh
 0 */1 * * * bash /deployment/deploy_script/deploy_staging_blogsite.sh
 ```
 
