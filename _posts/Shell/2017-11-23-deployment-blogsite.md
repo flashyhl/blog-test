@@ -116,6 +116,7 @@ echo "1111111111" > /deployment/deploy_script/blog_ver_dev
 * 修改当前存放版本信息的文件 
 发布脚本：
 \# vim /deployment/deploy_script/deploy_dev_blogsite.sh  
+  
 ```
 #!/bin/bash
 
@@ -183,7 +184,8 @@ echo "$new_ver" > $deplog_script_path/blog_ver_dev
 * 删除临时日志文件
 * 修改当前存放版本信息的文件
 发布脚本：  
-\# vim /deployment/deploy_script/deploy_staging_blogsite.sh  
+\# vim /deployment/deploy_script/deploy_staging_blogsite.sh   
+  
 ```
 #!/bin/bash
 
