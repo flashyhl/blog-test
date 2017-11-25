@@ -33,10 +33,10 @@ git add .
 git commit -m "提交$curr_date-fortune"
 git push origin master
 ```
-添加定时任务，每13分钟执行一次，如下：  
+添加定时任务，每15分钟执行一次，如下：  
 \# crontab -e  
 ```
-*/13 * * * * bash /usr/local/src/site.sh
+0,15,30,45 * * * * bash /usr/local/src/site.sh
 ```
 这样就能自动生成文章了
 
