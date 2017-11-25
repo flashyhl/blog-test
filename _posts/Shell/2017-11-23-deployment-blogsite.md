@@ -248,7 +248,7 @@ echo "$new_ver" > $deplog_script_path/blog_ver_staging
 2、Staging环境 每1小时更新一次  
 \# crontab -e  
 ```
-*/20 * * * * bash /deployment/deploy_script/deploy_dev_blogsite.sh
+0,20,40 * * * * bash /deployment/deploy_script/deploy_dev_blogsite.sh
 0 */1 * * * bash /deployment/deploy_script/deploy_staging_blogsite.sh
 ```
 
